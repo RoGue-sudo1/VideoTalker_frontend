@@ -1,6 +1,7 @@
 import store from '../../store/store'
-import { setLocalStream, setCallState, callStates, setCallingDialogVisible, setCallerUsername, setCallRejected, setRemoteStream, setScreenSharingActive, resetCallDataState } from '../../store/actions/callActions'
+import { setLocalStream, setCallState, callStates, setCallingDialogVisible, setCallerUsername, setCallRejected, setRemoteStream, setScreenSharingActive, resetCallDataState,setMessage } from '../../store/actions/callActions'
 import * as wss from '../wssConnection/wssConnection'
+import { getTurnServers, setTurnServers } from './TURN'
 
 const preOfferAnswers = {
     CALL_ACCEPTED: 'CALL_ACCEPTED',
@@ -13,14 +14,11 @@ const defaultConstrains = {
     audio: true
 }
 
-const configuration = {
-    iceServers: [{
-        urls: 'stun:stun.l.google.com:13902'
-    }]
-}
+
 
 let connectedUserSocketId
 let peerConnection
+let dataChannel
 
 export const getLocalStream = () => {
     navigator.mediaDevices.getUserMedia(defaultConstrains)
@@ -37,6 +35,12 @@ export const getLocalStream = () => {
 
 
 const createPeerConnection = () => {
+    const turnServers=getTurnServers()
+    const configuration = {
+        iceServers: [...turnServers,{url:'stun:stun.1und1.de:3478'}],
+        iceTransportPolicy:'relay'
+    }
+
     peerConnection = new RTCPeerConnection(configuration)
 
     const localStream = store.getState().call.localStream
@@ -47,6 +51,30 @@ const createPeerConnection = () => {
 
     peerConnection.ontrack = ({ streams: [stream] }) => {
         store.dispatch(setRemoteStream(stream))
+    }
+
+    //incoming data channel messages
+
+    peerConnection.ondatachannel=(event)=>{
+        const dataChannel=event.channel
+
+        dataChannel.onopen=()=>{
+            console.log('peer connection is ready to recieve data channel messages ')
+        }
+        dataChannel.onmessage=(event)=>{
+            store.dispatch(setMessage(
+                true,
+                event.data
+            ))
+        }
+        
+        
+    }
+
+    dataChannel=peerConnection.createDataChannel('chat')
+
+    dataChannel.onopen=()=>{
+        console.log('chat data channel is successfully opened')
     }
 
     peerConnection.onicecandidate = (event) => {
@@ -174,7 +202,7 @@ export const checkIfCallIsPossible = () => {
 
 let screenSharingStream
 
-export const switchForScreenSharingScreen = async () => {
+export const switchForScreenSharingStream = async () => {
     if (!store.getState().call.screenSharingActive) {
 
         try {
@@ -238,4 +266,8 @@ const resetCallDataAfterHangUp = () => {
 export const resetCallData = () => {
     connectedUserSocketId = null
     store.dispatch(setCallState(callStates.CALL_AVAILABLE))
+}
+
+export const sendMessageUsingDataChannel=(message)=>{
+    dataChannel.send(message)
 }

@@ -9,10 +9,16 @@ const initState = {
     rejected: false,
     reason: ''
   },
-  remoteStream:null,
-  localCameraEnabled:true,
-  localMicrophoneEnabled:true,
-  screenSharingActive:false
+  remoteStream: null,
+  localCameraEnabled: true,
+  localMicrophoneEnabled: true,
+  screenSharingActive: false,
+  groupCallActive: false,
+  groupCallStreams: [],
+  message:{
+    recieved:false,
+    content:''
+  }
 }
 
 const reducer = (state = initState, action) => {
@@ -43,34 +49,58 @@ const reducer = (state = initState, action) => {
         callRejected: action.callRejected
       }
     case callActions.CALL_SET_REMOTE_STREAM:
-      return{
+      return {
         ...state,
-        remoteStream:action.remoteStream
-      }
-    case callActions.CALL_SET_LOCAL_MICROPHONE_ENABLED:
-      return{
-        ...state,
-        localMicrophoneEnabled:action.enabled
+        remoteStream: action.remoteStream
       }
     case callActions.CALL_SET_LOCAL_CAMERA_ENABLED:
-      return{
+      return {
         ...state,
-        localCameraEnabled:action.enabled
+        localCameraEnabled: action.enabled
+      }
+    case callActions.CALL_SET_LOCAL_MICROPHONE_ENABLED:
+      return {
+        ...state,
+        localMicrophoneEnabled: action.enabled
       }
     case callActions.CALL_SET_SCREEN_SHARING_ACTIVE:
-      return{
+      return {
         ...state,
-        screenSharingActive:action.active
+        screenSharingActive: action.active
       }
-    case callActions.CALL_RESET_CALL_DATA:
+    case callActions.CALL_RESET_CALL_STATE:
+      return {
+        ...state,
+        remoteStream: null,
+        screenSharingActive: false,
+        callerUsername: '',
+        localMicrophoneEnabled: true,
+        localCameraEnabled: true,
+        callingDialogVisible: false
+      }
+    case callActions.CALL_SET_GROUP_CALL_ACTIVE:
+      return {
+        ...state,
+        groupCallActive: action.active
+      }
+    case callActions.CALL_SET_GROUP_CALL_STREAMS:
+      return {
+        ...state,
+        groupCallStreams: action.groupCallStreams
+      }
+    case callActions.CALL_CLEAR_GROUP_CALL_DATA:
+      return {
+        ...state,
+        groupCallActive: false,
+        groupCallStreams: [],
+        callState: callActions.callStates.CALL_AVAILABLE,
+        localMicrophoneEnabled: true,
+        localCameraEnabled: true
+      }
+    case callActions.CALL_SET_CHAT_MESSAGE:
       return{
         ...state,
-        remoteStream:null,
-        screenSharingActive:false,
-        callerUsername:'',
-        callingDialogVisible:false,
-        
-
+        message:action.message
       }
     default:
       return state

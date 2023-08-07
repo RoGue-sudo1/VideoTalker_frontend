@@ -18,7 +18,7 @@ const styles = {
       borderWidth: '0px',
       outline: 'none'
     }
-  };
+  }
 
 const ConversationButton=(props)=>{
     const {onClickHandler}=props

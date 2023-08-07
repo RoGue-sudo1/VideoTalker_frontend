@@ -1,7 +1,7 @@
 import React from 'react'
 import {MdCallEnd,MdMic,MdMicOff,MdVideocam,MdVideocamOff,MdVideoLabel,MdVideoCall,MdCamera} from 'react-icons/md'
 import { callStates } from '../../../store/actions/callActions'
-import { hangUp, switchForScreenSharingScreen } from '../../../utils/webRTC/webRTCHandler'
+import { hangUp, switchForScreenSharingStream } from '../../../utils/webRTC/webRTCHandler'
 import ConversationButton from './ConversationButton'
 
 
@@ -30,6 +30,7 @@ const ConversationButtons=(props)=>{
         screenSharingActive,
         remoteStream,
         callState,
+        groupCall
         
     }=props
 
@@ -46,7 +47,7 @@ const ConversationButtons=(props)=>{
     }
 
     const handleScreenSharingButtonPressed=()=>{
-        switchForScreenSharingScreen()
+        switchForScreenSharingStream()
 
     }
 
@@ -59,13 +60,13 @@ const ConversationButtons=(props)=>{
             <ConversationButton onClickHandler={handleMicButtonPressed}>
             {localMicrophoneEnabled ? <MdMic style={styles.icon}/> : <MdMicOff style={styles.icon}/> }
             </ConversationButton>
-            {(remoteStream && callState===callStates.CALL_IN_PROGRESS) && (<ConversationButton onClickHandler={handleHangUpButtonPressed}>
+            {(!groupCall && remoteStream && callState===callStates.CALL_IN_PROGRESS) && (<ConversationButton onClickHandler={handleHangUpButtonPressed}>
                 <MdCallEnd style={styles.icon}/>
             </ConversationButton>)}
             <ConversationButton onClickHandler={handleCameraButtonPressed}>
             {localCameraEnabled ? <MdVideocam style={styles.icon}/> : <MdVideocamOff style={styles.icon}/>}
             </ConversationButton>
-          {(remoteStream && callState===callStates.CALL_IN_PROGRESS) && ( <ConversationButton onClickHandler={handleScreenSharingButtonPressed}>
+          {(!groupCall && remoteStream && callState===callStates.CALL_IN_PROGRESS) && ( <ConversationButton onClickHandler={handleScreenSharingButtonPressed}>
             { screenSharingActive ? <MdCamera style={styles.icon}/> : <MdVideoLabel style={styles.icon}/> }
             </ConversationButton>)}
         </div>
