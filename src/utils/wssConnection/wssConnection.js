@@ -4,7 +4,7 @@ import * as dashboardActions from '../../store/actions/dashboardActions'
 import * as webRTCHandler from '../webRTC/webRTCHandler'
 import * as webRTCGroupCallHandler from '../webRTC/webRTCGroupCallHandler'
 
-const SERVER = 'https://videotalker-backend.onrender.com'
+const SERVER = 'https://videotalker-backend.onrender.com' 
 
 const broadcastEventTypes = {
   ACTIVE_USERS: 'ACTIVE_USERS',
