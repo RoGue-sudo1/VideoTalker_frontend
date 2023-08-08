@@ -10,9 +10,14 @@ let groupCallHost = false
 
 export const connectWithMyPeer = () => {
   myPeer = new window.Peer(undefined, {
-    config:{
-      iceSercers:[...getTurnServers(),{url:'stun:stun.1und1.de:3478'}]
-    }
+    // config:{
+    //   iceSercers:[...getTurnServers(),{url:'stun:stun.1und1.de:3478'}]
+    // }
+   config:{
+    iceServers:[{
+      urls:'stun:stun.1und1.de:3478'
+    }]
+   }
   })
 
   myPeer.on('open', (id) => {

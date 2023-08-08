@@ -14,19 +14,24 @@ import './Dashboard.css'
 import { setTurnServers } from '../utils/webRTC/TURN'
 
 const Dashboard = ({ username, callState }) => {
-  useEffect(() => {
-    axios.get('https://videotalker-backend.onrender.com/api/get-turn-credentials').then(
-      responseData=>{
-        console.log(responseData)
-        setTurnServers(responseData.data.token.iceServers)
-        webRTCHandler.getLocalStream()
-        webRTCGroupHandler.connectWithMyPeer()
-      }
-    ).catch(err=>{
-      console.log(err)
-    })
+  // useEffect(() => {
+  //   axios.get('https://videotalker-backend.onrender.com/api/get-turn-credentials').then(
+  //     responseData=>{
+  //       console.log(responseData)
+  //       setTurnServers(responseData.data.token.iceServers)
+  //       webRTCHandler.getLocalStream()
+  //       webRTCGroupHandler.connectWithMyPeer()
+  //     }
+  //   ).catch(err=>{
+  //     console.log(err)
+  //   })
     
-  }, [])
+  // }, [])
+  useEffect(()=>{
+    webRTCHandler.getLocalStream()
+        webRTCGroupHandler.connectWithMyPeer()
+
+  },[])
 
   return (
     <div className='dashboard_container background_main_color'>
